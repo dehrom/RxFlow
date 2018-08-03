@@ -58,16 +58,15 @@ public class Flows {
     ///   - block: block to execute whenever the Flows are ready to use
     public static func whenReady<RootType: UIViewController>(flows: [Flow],
                                                              block: @escaping ([RootType]) -> Void) {
-        let flowObservables = flows.map { $0.rxFlowReady.asObservable() }
+        let flowSingles = flows.map { $0.rxFlowReady }
         let roots = flows.compactMap { $0.root as? RootType }
         guard roots.count == flows.count else {
             fatalError ("Type mismatch, Flows roots types do not match the types awaited in the block")
         }
-        _ = Observable<Void>.zip(flowObservables, { (_) in
-            return Void()
-        }).take(1).subscribe(onNext: { (_) in
-            block(roots)
-        })
+        _ = Single.zip(flowSingles)
+            .subscribe(onSuccess: { (_) in
+                block(roots)
+            })
     }
 
     // swiftlint:disable function_parameter_count
@@ -99,13 +98,8 @@ public class Flows {
                 fatalError ("Type mismatch, Flows roots types do not match the types awaited in the block")
         }
 
-        _ = Observable<Void>.zip(flow1.rxFlowReady.asObservable(),
-                                 flow2.rxFlowReady.asObservable(),
-                                 flow3.rxFlowReady.asObservable(),
-                                 flow4.rxFlowReady.asObservable(),
-                                 flow5.rxFlowReady.asObservable()) { (_, _, _, _, _) in
-                                    return Void()
-            }.take(1).subscribe(onNext: { (_) in
+        _ = Single.zip([flow1.rxFlowReady, flow2.rxFlowReady, flow3.rxFlowReady, flow4.rxFlowReady, flow5.rxFlowReady])
+            .subscribe(onSuccess: { (_) in
                 block(root1, root2, root3, root4, root5)
             })
     }
@@ -135,12 +129,8 @@ public class Flows {
                 fatalError ("Type mismatch, Flows roots types do not match the types awaited in the block")
         }
 
-        _ = Observable<Void>.zip(flow1.rxFlowReady.asObservable(),
-                                 flow2.rxFlowReady.asObservable(),
-                                 flow3.rxFlowReady.asObservable(),
-                                 flow4.rxFlowReady.asObservable()) { (_, _, _, _) in
-            return Void()
-            }.take(1).subscribe(onNext: { (_) in
+        _ = Single.zip([flow1.rxFlowReady, flow2.rxFlowReady, flow3.rxFlowReady, flow4.rxFlowReady])
+            .subscribe(onSuccess: { (_) in
                 block(root1, root2, root3, root4)
             })
     }
@@ -165,11 +155,8 @@ public class Flows {
                 fatalError ("Type mismatch, Flows roots types do not match the types awaited in the block")
         }
 
-        _ = Observable<Void>.zip(flow1.rxFlowReady.asObservable(),
-                                 flow2.rxFlowReady.asObservable(),
-                                 flow3.rxFlowReady.asObservable()) { (_, _, _) in
-            return Void()
-            }.take(1).subscribe(onNext: { (_) in
+        _ = Single.zip([flow1.rxFlowReady, flow2.rxFlowReady, flow3.rxFlowReady])
+            .subscribe(onSuccess: { (_) in
                 block(root1, root2, root3)
             })
     }
@@ -189,10 +176,8 @@ public class Flows {
                 fatalError ("Type mismatch, Flows root types do not match the types awaited in the block")
         }
 
-        _ = Observable<Void>.zip(flow1.rxFlowReady.asObservable(),
-                                 flow2.rxFlowReady.asObservable()) { (_, _) in
-            return Void()
-            }.take(1).subscribe(onNext: { (_) in
+        _ = Single.zip([flow1.rxFlowReady, flow2.rxFlowReady])
+            .subscribe(onSuccess: { (_) in
                 block(root1, root2)
             })
     }
