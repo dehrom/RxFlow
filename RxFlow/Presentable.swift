@@ -6,13 +6,11 @@
 //  Copyright (c) RxSwiftCommunity. All rights reserved.
 //
 
-import UIKit.UIViewController
-
 import RxSwift
+import UIKit.UIViewController
 
 /// An abstraction of what can be presented to the screen. For now, UIViewControllers and Flows are Presentable
 public protocol Presentable: HasDisposeBag {
-
     /// Rx Observable that triggers a bool indicating if the current Presentable is being displayed (applies to UIViewController, Warp or UIWindow for instance)
     var rxVisible: Observable<Bool> { get }
 
@@ -24,50 +22,48 @@ public protocol Presentable: HasDisposeBag {
 }
 
 extension Presentable where Self: UIViewController {
-
     /// Rx Observable that triggers a bool indicating if the current UIViewController is being displayed
     public var rxVisible: Observable<Bool> {
-        return self.rx.displayed
+        return rx.displayed
     }
 
     /// Rx Observable (Single trait) triggered when this UIViewController is displayed for the first time
     public var rxFirstTimeVisible: Single<Void> {
-        return self.rx.firstTimeViewDidAppear
+        return rx.firstTimeViewDidAppear
     }
 
     /// Rx Observable (Single trait) triggered when this UIViewController is dismissed
     public var rxDismissed: Single<Void> {
-        return self.rx.dismissed.map { _ -> Void in return Void() }.take(1).asSingle()
+        return rx.dismissed.map { _ -> Void in Void() }.take(1).asSingle()
     }
 }
 
 extension Presentable where Self: Flow {
-
     /// Rx Observable that triggers a bool indicating if the current Flow is being displayed
     public var rxVisible: Observable<Bool> {
-        return self.root.rxVisible
+        return root.rxVisible
     }
 
     /// Rx Observable (Single trait) triggered when this Flow is displayed for the first time
     public var rxFirstTimeVisible: Single<Void> {
-        return self.root.rxFirstTimeVisible
+        return root.rxFirstTimeVisible
     }
 
     /// Rx Observable (Single trait) triggered when this Flow is dismissed
     public var rxDismissed: Single<Void> {
-        return self.root.rxDismissed
+        return root.rxDismissed
     }
 }
 
 extension Presentable where Self: UIWindow {
     /// Rx Observable (Single trait) triggered when this UIWindow is displayed for the first time
     public var rxFirstTimeVisible: Single<Void> {
-        return self.rx.windowDidAppear.asSingle()
+        return rx.windowDidAppear.asSingle()
     }
 
     /// Rx Observable that triggers a bool indicating if the current UIWindow is being displayed
     public var rxVisible: Observable<Bool> {
-        return self.rx.windowDidAppear.asObservable().map { true }
+        return rx.windowDidAppear.asObservable().map { true }
     }
 
     /// Rx Observable (Single trait) triggered when this UIWindow is dismissed

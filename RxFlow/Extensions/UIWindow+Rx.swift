@@ -6,14 +6,12 @@
 //  Copyright (c) RxSwiftCommunity. All rights reserved.
 //
 
-import UIKit
 import RxSwift
+import UIKit
 
 extension Reactive where Base: UIWindow {
-
     /// Rx Single that is triggered once the UIWindow is displayed
     public var windowDidAppear: Observable<Void> {
-        return self.sentMessage(#selector(Base.makeKeyAndVisible)).map {_ in return Void()}
+        return sentMessage(#selector(Base.makeKeyAndVisible)).map { _ in Void() }
     }
-
 }
