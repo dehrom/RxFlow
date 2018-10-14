@@ -15,16 +15,14 @@ private var disposeBagContext: UInt8 = 0
 
 /// Each HasDisposeBag offers a unique Rx DisposeBag instance
 public protocol HasDisposeBag: class, Synchronizable {
-
     /// a unique Rx DisposeBag instance
     var disposeBag: DisposeBag { get }
 }
 
 extension HasDisposeBag {
-
     /// The concrete DisposeBag instance
     public var disposeBag: DisposeBag {
-        return self.synchronized {
+        return synchronized {
             if let disposeObject = objc_getAssociatedObject(self, &disposeBagContext) as? DisposeBag {
                 return disposeObject
             }

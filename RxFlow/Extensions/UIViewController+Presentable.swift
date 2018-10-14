@@ -6,9 +6,8 @@
 //  Copyright (c) RxSwiftCommunity. All rights reserved.
 //
 
-import UIKit.UIViewController
-
 import RxSwift
+import UIKit.UIViewController
 
 extension UIViewController: Presentable {
 }

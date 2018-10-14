@@ -12,14 +12,13 @@ import RxSwift
 // Its License can be found here: ../DependenciesLicenses/RxSwiftCommunity-RxSwiftExt-License
 
 extension ObservableType {
-
     /// Pauses the elements of the source observable sequence based on the latest element from the second observable sequence.
     /// Elements are ignored unless the second sequence has most recently emitted `true`.
     /// seealso: [pausable operator on reactivex.io](http://reactivex.io/documentation/operators/backpressure.html)
     ///
     /// - Parameter pauser: The observable sequence used to pause the source observable sequence.
     /// - Returns: The observable sequence which is paused based upon the pauser observable sequence.
-    public func pausable<P: ObservableType> (withPauser pauser: P) -> Observable<E> where P.E == Bool {
+    public func pausable<P: ObservableType>(withPauser pauser: P) -> Observable<E> where P.E == Bool {
         return withLatestFrom(pauser) { element, paused in (element, paused) }
             .filter { _, paused in paused }
             .map { element, _ in element }
@@ -34,8 +33,7 @@ extension ObservableType {
     /// - Parameter count: the number of events before considering the pauser parameter
     /// - Parameter pauser: The observable sequence used to pause the source observable sequence.
     /// - Returns: The observable sequence which is paused based upon the pauser observable sequence.
-    public func pausable<P: ObservableType> (afterCount count: Int, withPauser pauser: P) -> Observable<E> where P.E == Bool {
-
+    public func pausable<P: ObservableType>(afterCount count: Int, withPauser pauser: P) -> Observable<E> where P.E == Bool {
         return Observable<E>.create { observer in
 
             let lock = NSRecursiveLock()
@@ -45,11 +43,11 @@ extension ObservableType {
             let pauserDisposable = pauser.subscribe { event in
                 lock.lock(); defer { lock.unlock() }
                 switch event {
-                case .next(let resume):
+                case let .next(resume):
                     paused = !resume
                 case .completed:
                     observer.onCompleted()
-                case .error(let error):
+                case let .error(error):
                     observer.onError(error)
                 }
             }
@@ -57,7 +55,7 @@ extension ObservableType {
             let disposable = self.subscribe { event in
                 lock.lock(); defer { lock.unlock() }
                 switch event {
-                case .next(let element):
+                case let .next(element):
 
                     if (elementIndex < count) || !paused {
                         elementIndex += 1
@@ -66,7 +64,7 @@ extension ObservableType {
 
                 case .completed:
                     observer.onCompleted()
-                case .error(let error):
+                case let .error(error):
                     observer.onError(error)
                 }
             }

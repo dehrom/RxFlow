@@ -7,7 +7,6 @@
 //
 
 final class StepContext {
-
     public var fromChildFlow: Flow?
     weak var withinFlow: Flow?
 
